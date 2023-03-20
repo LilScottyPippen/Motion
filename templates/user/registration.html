@@ -18,7 +18,7 @@
         <form class="p-3 mt-3" method="post">
             {% csrf_token %}
             <div class="form-field d-flex align-items-center">
-                <input type="text" name="userName" id="userName" placeholder="Username">
+                <input type="text" name="username" id="userName" placeholder="Username">
             </div>
             <div class="form-field d-flex align-items-center">
                 <input type="email" name="email" id="email" placeholder="Email">
@@ -34,6 +34,7 @@
         <div class="text-center fs-6">
             <span style="color: white">Have already an account?</span><br><a href="{% url 'auth' %}">Login</a>
         </div>
+        <span style="color: red;">{{ form.errors }}</span>
 </div>
 </body>
 </html>
