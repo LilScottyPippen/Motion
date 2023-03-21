@@ -28,6 +28,9 @@
         <div class="text-center fs-6">
             <a href="#">Forget password?</a> <span style="color: white">or</span> <a href="{% url 'reg' %}">Sign up</a>
         </div>
+        <div align="center">
+            <a href="{% url 'github_login' %}"><img src="{% static 'img/github.png' %}" width="40" style="border-radius: 10px"></a>
+        </div>
         {% for message in messages %}
             <div style="color: red">{{ message }}</div>
         {% endfor %}
