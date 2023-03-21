@@ -1,16 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from .forms import UserCreationForm
+from .forms import CreateUserForm
 # Create your views here.
 
 def authUser(request):
     if request.user.is_anonymous:
         if request.method == 'POST':
-            username = request.POST.get("username")
+            email = request.POST.get("email")
             password = request.POST.get("password")
 
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(request, email=email, password=password)
 
             if user is not None:
                 login(request, user)
@@ -22,13 +22,12 @@ def authUser(request):
     return render(request, 'user/authorization.html')
 
 def regUser(request):
-    form = UserCreationForm
     if request.user.is_anonymous:
+        form = CreateUserForm()
         if request.method == 'POST':
-            form = UserCreationForm(request.POST)
+            form = CreateUserForm(request.POST)
             if form.is_valid():
                 form.save()
-                print(form.errors)
                 return redirect('auth')
     else:
         return redirect('/')
