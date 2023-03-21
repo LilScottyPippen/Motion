@@ -27,11 +27,14 @@ I created the Motion project to help people manage their notes more efficiently.
   <li>Availability of notes anytime, anywhere</li>
 </ul>
 <h2>Usage examples</h2>
+Motion can be used to record any notes - from to-do lists to important information. For example, you can use Motion to record your tasks for the day, to store important contacts, to record ideas for a project, and much more.
+<!--
 <ul>
   <li>Creating a to-do list</li>
   <li>Recording ideas for a project</li>
   <li>Saving recipes</li>
   <li>Educational synopsis</li>
 </ul>
+-->
 <h2>Further development</h2>
 I will continue to develop the project by adding new functionality and improving existing ones. For example, I plan to add a feature for sharing notes with other users. I will also improve the design and interface of the service to make it even more user-friendly.
