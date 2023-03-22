@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Motion</title>
+</head>
+<body style="margin: 0;">
+    <div style="background-color: #1E1D1D; text-align: center;">
+        <img src="{% static 'img/logo.png' %}" style="padding-top: 20px;" width="230px"><br>
+        <div style="font-family: Ubuntu; font-weight: bold; color: white; font-size: 50px;">Motion</div><br>
+        <div style="font-family: Ubuntu; font-weight: bold; color: white; font-size: 30px; padding-top: 10px;">Motion is a free, open source service that provides<br>users with the ability to create notes.</div>
+        <a href="{% url 'auth' %}"><input type="button" style="background-color: white; border: 0; border-radius: 15px; font-family: Ubuntu; font-weight: bold; font-size: 30px; padding: 15px 25px; margin-top: 40px; cursor: pointer;" value="Get Motion free"></a><br>
+        <a href="https://github.com/LilScottyPippen/Motion"><img src="{% static 'img/github(white).png' %}" width="60px" style="padding: 20px 0"></a>
+    </div>
+    <div style="text-align: center; font-family: Ubuntu; font-weight: bold; font-size: 50px; padding-top: 50px;">
+        Your 📚 wiki, 📝docs,<br>
+        &<br>
+        📑projects.<br>
+        Together.
+    </div>
+</body>
+</html>
