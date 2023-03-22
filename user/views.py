@@ -81,14 +81,14 @@ def google_callback(request):
                 user_info = requests.get('https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + access_token)
                 user_info = json.loads(user_info.text)
                 if GoogleCredentials.objects.filter(email=user_info['email']):
-                    user = authenticate(username=user_info['email'], password=None)
+                    user, created = CustomUser.objects.get_or_create(email=user_info['email'])
                     if user is not None:
                         login(request, user)
                         return redirect('/')
                     else:
                         return HttpResponse('Authentication failed')
                 else:
-                    user, created = CustomUser.objects.get_or_create(username=user_info['name'], email=user_info['email'])
+                    user, created = CustomUser.objects.get_or_create(email=user_info['email'])
                     credentials = GoogleCredentials.objects.create(user=user, access_token=access_token, id_token=id_token, email=user_info['email'])
                     credentials.save()
                     if user is not None:
