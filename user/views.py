@@ -5,7 +5,7 @@ from .forms import CreateUserForm
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
 import requests
-from .models import CustomUser
+from .models import CustomUser,GitHubCredentials
 # Create your views here.
 
 def authUser(request):
@@ -63,17 +63,20 @@ def github_callback(request):
     }
     response = requests.get(user_url, headers=headers)
     json_response = response.json()
-    user_id = json_response['id']
-    username = json_response['login']
-    github_user, created = CustomUser.objects.get_or_create(github_id=user_id)
-    github_user.username = username
-    github_user.save()
-
-    user = authenticate(request, username=username, password=None)
-
-    if user is not None:
-        login(request, user)
-        return redirect('/')
+    if GitHubCredentials.objects.filter(_id=json_response['id']):
+        user, created = CustomUser.objects.get_or_create(username=json_response['login'])
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            return HttpResponse('Authentication failed')
     else:
-        return HttpResponse('Authentication failed')
+        user, created = CustomUser.objects.get_or_create(username=json_response['login'])
+        credentials = GitHubCredentials.objects.create(user=user, _id=json_response['id'], login=json_response['login'])
+        credentials.save()
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            return HttpResponse('Authentication failed')
     return redirect('/')

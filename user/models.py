@@ -13,7 +13,6 @@ def existUsername(username):
         raise ValidationError('This username already exists.')
     return username
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    github_id = models.CharField(max_length=255, unique=True, null=True)
     username = models.CharField(max_length=30, validators=[existUsername])
     email = models.EmailField(unique=True, null=True, validators=[existEmail])
     is_active = models.BooleanField(default=True)
@@ -25,3 +24,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
     def __str__(self):
         return self.username
+
+class GitHubCredentials(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    _id = models.CharField(max_length=255)
+    login = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.login
