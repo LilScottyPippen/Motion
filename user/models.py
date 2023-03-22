@@ -24,3 +24,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
     def __str__(self):
         return self.email
+
+class GoogleCredentials(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    access_token = models.CharField(max_length=255)
+    id_token = models.CharField(max_length=255)
+    email = models.EmailField(blank=True)
+
+    def __str__(self):
+        return self.user.email

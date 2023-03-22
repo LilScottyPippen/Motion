@@ -28,6 +28,9 @@
         <div class="text-center fs-6">
             <a href="#">Forget password?</a> <span style="color: white">or</span> <a href="{% url 'reg' %}">Sign up</a>
         </div>
+        <div align="center">
+            <a href="{% url 'google_auth' %}"><img src="{% static 'img/google.png' %}" width="35" alt=""></a>
+        </div>
         {% for message in messages %}
             <div style="color: red">{{ message }}</div>
         {% endfor %}
