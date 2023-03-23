@@ -26,8 +26,12 @@
       <div class="page">Page 1</div>
   </div>
   <div class="content" align="center">
-      <div class="noteTitle" align="left" contenteditable="true" autofocus data-placeholder="Title"></div>
-      <div class="noteText" align="left" contenteditable="true" data-placeholder="Write..."></div>
+      <form method="post">
+          {% csrf_token %}
+          <div class="noteTitle" align="left" contenteditable="true" autofocus data-placeholder="Title"></div>
+          <div class="noteText" align="left" contenteditable="true" data-placeholder="Write..."></div>
+          <button type="submit">Click</button>
+      </form>
   </div>
   <script src="{% static 'js/note.js' %}"></script>
 </body>
