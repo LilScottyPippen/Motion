@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Note</title>
+    <link rel="stylesheet" href="{% static 'css/note.css' %}">
+</head>
+<body style="background-color: #191919;">
+  <div id="sidebar">
+      <div class="logo" align="center"><span>Motion</span></div>
+      <div class="user" onclick="toggleDropdown()">
+          {% if email == None %}
+              {{ username }}
+          {% else %}
+              {{ email }}
+          {% endif %}
+      </div>
+      <div id="dropdown" style="display: none;">
+          <div class="dropdown-item" style="opacity: 0; transform: translateY(-10px); transition: all 0.2s ease-in-out;">Profile</div>
+          <div class="dropdown-item" style="opacity: 0; transform: translateY(-10px); transition: all 0.2s ease-in-out;">Settings
+              <a href="{% url 'logout' %}" style="text-decoration: none"><div class="dropdown-item" style="opacity: 0; transform: translateY(-10px); transition: all 0.2s ease-in-out;">Logout</div></a>
+          </div>
+      </div>
+      <hr>
+      {% for note in notes %}
+          <div class="page" style="cursor: pointer;">
+              <a href="{% url 'notePage' note.url %}" style="text-decoration: none; color: #8B8B8B">{{ note.title }}</a>
+              <a href="{% url 'deleteNote' note.url %}"><img src="{% static 'img/trash.png' %}" alt="Delete icon" width="20" height="20" style="margin-right: 5px;" align="right"></a>
+          </div>
+      {% endfor %}
+      <hr>
+      <div style="text-align: center">
+          <button class="page" style="cursor: pointer;"><a href="{% url 'createNote' %}" style="text-decoration: none; color: #8B8B8B">New note</a></button>
+      </div>
+  </div>
+  <div class="content" align="center">
+      <form method="post">
+          {% csrf_token %}
+          <div class="noteTitle" id="noteTitle" align="left" contenteditable="true" autofocus data-placeholder="Title">{{ note.title }}</div>
+          <input type="hidden" name="title" id="inputTitle">
+          <div class="noteText" id="noteText" align="left" contenteditable="true" data-placeholder="Write...">{{ note.text }}</div>
+          <input type="hidden" name="text" id="inputText">
+          <button type="submit" onclick="inInput()" class="btnSave">Save</button>
+      </form>
+  </div>
+  <script src="{% static 'js/note.js' %}"></script>
+</body>
+</html>

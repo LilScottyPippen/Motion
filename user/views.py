@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import CreateUserForm
 from django.conf import settings
@@ -44,6 +44,10 @@ def regUser(request):
         'form': form
     }
     return render(request, 'user/registration.html', context)
+
+def logoutUser(request):
+    logout(request)
+    return redirect('/')
 
 def google_auth(request):
     redirect_uri = request.build_absolute_uri(reverse('google_callback'))
