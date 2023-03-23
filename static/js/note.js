@@ -58,3 +58,15 @@ document.getElementById('sidebar').addEventListener('mouseover', () => {
 document.getElementById('sidebar').addEventListener('mouseout', () => {
   document.querySelector('.content').style.marginLeft = "0";
 });
+
+function inInput(){
+  if (document.getElementById('noteTitle').innerText.length  === 0) {
+    document.getElementById('inputTitle').value = "Title";
+  }
+  else{
+    document.getElementById('inputTitle').value = document.getElementById('noteTitle').innerText;
+  }
+  document.getElementById('inputText').value = document.getElementById('noteText').innerText;
+  document.getElementById('inputText').value = document.getElementById('noteText').innerText;
+}
+

@@ -23,14 +23,25 @@
           </div>
       </div>
       <hr>
-      <div class="page">Page 1</div>
+      {% for note in notes %}
+          <div class="page" style="cursor: pointer;">
+              <a href="{% url 'notePage' note.url %}" style="text-decoration: none; color: #8B8B8B">{{ note.title }}</a>
+              <a href="{% url 'deleteNote' note.url %}"><img src="{% static 'img/trash.png' %}" alt="Delete icon" width="20" height="20" style="margin-right: 5px;" align="right"></a>
+          </div>
+      {% endfor %}
+      <hr>
+      <div style="text-align: center">
+          <button class="page" style="cursor: pointer;"><a href="{% url 'createNote' %}" style="text-decoration: none; color: #8B8B8B">New note</a></button>
+      </div>
   </div>
   <div class="content" align="center">
       <form method="post">
           {% csrf_token %}
-          <div class="noteTitle" align="left" contenteditable="true" autofocus data-placeholder="Title"></div>
-          <div class="noteText" align="left" contenteditable="true" data-placeholder="Write..."></div>
-          <button type="submit">Click</button>
+          <div class="noteTitle" id="noteTitle" align="left" contenteditable="true" autofocus data-placeholder="Title">{{ note.title }}</div>
+          <input type="hidden" name="title" id="inputTitle">
+          <div class="noteText" id="noteText" align="left" contenteditable="true" data-placeholder="Write...">{{ note.text }}</div>
+          <input type="hidden" name="text" id="inputText">
+          <button type="submit" onclick="inInput()">Click</button>
       </form>
   </div>
   <script src="{% static 'js/note.js' %}"></script>
