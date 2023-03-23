@@ -106,4 +106,13 @@ body{
 [contenteditable="true"]:empty:not(:focus):before {
     content: attr(data-placeholder);
     color: #7a7a7a;
-  }
+}
+
+.btnSave{
+    color: black;
+    font-family: Ubuntu;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px 10px;
+}

@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
-from user.models import CustomUser
-from .forms import NoteForm
 from .models import Note
 import string
 import random
@@ -20,9 +18,6 @@ def notePage(request, url):
         username = request.user.username
         notes = Note.objects.filter(user_id=request.user)
         if request.method == 'POST':
-            # if note.title == '':
-            #     note.title = 'Title'
-            # else:
             note.title = request.POST.get('title')
             note.text = request.POST.get('text')
             note.save()

@@ -41,7 +41,7 @@
           <input type="hidden" name="title" id="inputTitle">
           <div class="noteText" id="noteText" align="left" contenteditable="true" data-placeholder="Write...">{{ note.text }}</div>
           <input type="hidden" name="text" id="inputText">
-          <button type="submit" onclick="inInput()">Click</button>
+          <button type="submit" onclick="inInput()" class="btnSave">Save</button>
       </form>
   </div>
   <script src="{% static 'js/note.js' %}"></script>
