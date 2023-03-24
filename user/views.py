@@ -44,6 +44,9 @@ def regUser(request):
     }
     return render(request, 'user/registration.html', context)
 
+def resetUser(request):
+    return render(request, 'user/resetPassword.html')
+
 def logoutUser(request):
     logout(request)
     return redirect('/')
