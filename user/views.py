@@ -5,7 +5,6 @@ from .forms import CreateUserForm
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from .models import CustomUser, GoogleCredentials, GitHubCredentials
-from django.shortcuts import redirect
 from django.urls import reverse
 import urllib.parse
 import json
@@ -25,7 +24,7 @@ def authUser(request):
                 login(request, user)
                 return redirect('/')
             else:
-                messages.info(request, "Username or password is incorrect")
+                messages.info(request, "Email or password is incorrect")
     else:
         return redirect('/')
     return render(request, 'user/authorization.html')
