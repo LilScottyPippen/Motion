@@ -71,9 +71,8 @@ function inInput(){
 }
 
 document.addEventListener('keydown', function(event) {
-  if (event.ctrlKey && event.key === 'z') {
+  if (event.ctrlKey && event.key === 'z' && document.hasFocus()) {
     event.preventDefault();
-    const pastedText = (event.clipboardData || window.clipboardData).getData('text');
-    document.execCommand('insertText', false, pastedText);
+    document.execCommand('undo');
   }
 });
