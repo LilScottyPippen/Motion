@@ -63,7 +63,7 @@ def google_auth(request):
     url = 'https://accounts.google.com/o/oauth2/auth?' + urllib.parse.urlencode(params)
     return redirect(url)
 
-def google_callback(request):
+def google_callback(request, json_response=None):
     if 'error' in request.GET:
         return HttpResponseBadRequest(request.GET['error_description'])
     else:
@@ -90,6 +90,8 @@ def google_callback(request):
                 user_info = json.loads(user_info.text)
                 if GoogleCredentials.objects.filter(email=user_info['email']):
                     user, created = CustomUser.objects.get_or_create(email=user_info['email'])
+                    user.is_google = True
+                    user.save()
                     if user is not None:
                         login(request, user)
                         return redirect('/')
@@ -100,6 +102,7 @@ def google_callback(request):
                     credentials = GoogleCredentials.objects.create(user=user, access_token=access_token, id_token=id_token, email=user_info['email'])
                     credentials.save()
                     if user is not None:
+                        user.set_google_login(login=json_response['email'])
                         login(request, user)
                         return redirect('/')
                     else:
@@ -141,6 +144,7 @@ def github_callback(request):
         credentials = GitHubCredentials.objects.create(user=user, _id=json_response['id'], login=json_response['login'])
         credentials.save()
         if user is not None:
+            user.set_github_login(login=json_response['login'])
             login(request, user)
             return redirect('/')
         else:
