@@ -10,6 +10,10 @@ import urllib.parse
 import json
 from django.http import HttpResponseRedirect, HttpResponse
 import requests
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+import random
+from django.core.cache import cache
 # Create your views here.
 
 def authUser(request):
@@ -45,6 +49,13 @@ def regUser(request):
     return render(request, 'user/registration.html', context)
 
 def resetUser(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        code = ''
+        for i in range(6):
+            code += str(random.randint(0, 9))
+        cache.set(email, code, 300)
+        send_verification_email(email, code)
     return render(request, 'user/resetPassword.html')
 
 def logoutUser(request):
@@ -150,3 +161,10 @@ def github_callback(request):
         else:
             return HttpResponse('Authentication failed')
     return redirect('/')
+
+def send_verification_email(email, code):
+    subject = 'Код проверки email'
+    message = render_to_string('user/verification_email.html', {'code': code})
+    from_email = 'denaiphone16@gmail.com'
+    recipient_list = [email]
+    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
