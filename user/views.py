@@ -14,6 +14,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 import random
 from django.core.cache import cache
+import uuid
 # Create your views here.
 
 def authUser(request):
@@ -51,12 +52,48 @@ def regUser(request):
 def resetUser(request):
     if request.method == 'POST':
         email = request.POST['email']
-        code = ''
-        for i in range(6):
-            code += str(random.randint(0, 9))
-        cache.set(email, code, 300)
-        send_verification_email(email, code)
+        try:
+            user = CustomUser.objects.get(email=email)
+            if user.is_google != True:
+                code = ''
+                token = str(uuid.uuid4())
+                for i in range(6):
+                    code += str(random.randint(0, 9))
+                print(code)
+                cache.set(email, code, 300)
+                cache.set(token, token, 300)
+                send_verification_email(email, code)
+                return redirect('verif', email, token)
+        except:
+            messages.info(request, 'Not found email!')
     return render(request, 'user/resetPassword.html')
+
+def verifyEmail(request, email, token):
+    code = cache.get(email)
+    getToken = cache.get(token)
+    if getToken == token:
+        if request.method == 'POST':
+            if code == request.POST.get('code'):
+                return redirect('changePassword', email, token)
+    else:
+        return redirect('auth')
+    return render(request, 'user/verifEmail.html')
+
+def changePassword(request, email, token):
+    getToken = cache.get(token)
+    if getToken == token:
+        if request.method == 'POST':
+            newPassword = request.POST.get('password')
+            if len(newPassword) >= 6:
+                user = CustomUser.objects.get(email=email)
+                user.set_password(newPassword)
+                user.save()
+                return redirect('auth')
+            else:
+                print('Password invalid')
+    else:
+        return redirect('auth')
+    return render(request, 'user/changePassword.html')
 
 def logoutUser(request):
     logout(request)
@@ -163,8 +200,7 @@ def github_callback(request):
     return redirect('/')
 
 def send_verification_email(email, code):
-    subject = 'Код проверки email'
+    subject = 'Email verification code'
     message = render_to_string('user/verification_email.html', {'code': code})
-    from_email = 'denaiphone16@gmail.com'
     recipient_list = [email]
-    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+    send_mail(subject, message, settings.EMAIL_HOST, recipient_list, fail_silently=False)
