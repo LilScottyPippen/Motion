@@ -5,12 +5,16 @@ from .forms import CreateUserForm
 from django.conf import settings
 from django.http import HttpResponseBadRequest
 from .models import CustomUser, GoogleCredentials, GitHubCredentials
-from django.shortcuts import redirect
 from django.urls import reverse
 import urllib.parse
 import json
 from django.http import HttpResponseRedirect, HttpResponse
 import requests
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+import random
+from django.core.cache import cache
+import uuid
 # Create your views here.
 
 def authUser(request):
@@ -25,7 +29,7 @@ def authUser(request):
                 login(request, user)
                 return redirect('/')
             else:
-                messages.info(request, "Username or password is incorrect")
+                messages.info(request, "Email or password is incorrect")
     else:
         return redirect('/')
     return render(request, 'user/authorization.html')
@@ -45,6 +49,52 @@ def regUser(request):
     }
     return render(request, 'user/registration.html', context)
 
+def resetUser(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        try:
+            user = CustomUser.objects.get(email=email)
+            if user.is_google != True:
+                code = ''
+                token = str(uuid.uuid4())
+                for i in range(6):
+                    code += str(random.randint(0, 9))
+                print(code)
+                cache.set(email, code, 300)
+                cache.set(token, token, 300)
+                send_verification_email(email, code)
+                return redirect('verif', email, token)
+        except:
+            messages.info(request, 'Not found email!')
+    return render(request, 'user/resetPassword.html')
+
+def verifyEmail(request, email, token):
+    code = cache.get(email)
+    getToken = cache.get(token)
+    if getToken == token:
+        if request.method == 'POST':
+            if code == request.POST.get('code'):
+                return redirect('changePassword', email, token)
+    else:
+        return redirect('auth')
+    return render(request, 'user/verifEmail.html')
+
+def changePassword(request, email, token):
+    getToken = cache.get(token)
+    if getToken == token:
+        if request.method == 'POST':
+            newPassword = request.POST.get('password')
+            if len(newPassword) >= 6:
+                user = CustomUser.objects.get(email=email)
+                user.set_password(newPassword)
+                user.save()
+                return redirect('auth')
+            else:
+                print('Password invalid')
+    else:
+        return redirect('auth')
+    return render(request, 'user/changePassword.html')
+
 def logoutUser(request):
     logout(request)
     return redirect('/')
@@ -61,7 +111,7 @@ def google_auth(request):
     url = 'https://accounts.google.com/o/oauth2/auth?' + urllib.parse.urlencode(params)
     return redirect(url)
 
-def google_callback(request):
+def google_callback(request, json_response=None):
     if 'error' in request.GET:
         return HttpResponseBadRequest(request.GET['error_description'])
     else:
@@ -88,6 +138,8 @@ def google_callback(request):
                 user_info = json.loads(user_info.text)
                 if GoogleCredentials.objects.filter(email=user_info['email']):
                     user, created = CustomUser.objects.get_or_create(email=user_info['email'])
+                    user.is_google = True
+                    user.save()
                     if user is not None:
                         login(request, user)
                         return redirect('/')
@@ -98,6 +150,7 @@ def google_callback(request):
                     credentials = GoogleCredentials.objects.create(user=user, access_token=access_token, id_token=id_token, email=user_info['email'])
                     credentials.save()
                     if user is not None:
+                        user.set_google_login(login=json_response['email'])
                         login(request, user)
                         return redirect('/')
                     else:
@@ -139,8 +192,15 @@ def github_callback(request):
         credentials = GitHubCredentials.objects.create(user=user, _id=json_response['id'], login=json_response['login'])
         credentials.save()
         if user is not None:
+            user.set_github_login(login=json_response['login'])
             login(request, user)
             return redirect('/')
         else:
             return HttpResponse('Authentication failed')
     return redirect('/')
+
+def send_verification_email(email, code):
+    subject = 'Email verification code'
+    message = render_to_string('user/verification_email.html', {'code': code})
+    recipient_list = [email]
+    send_mail(subject, message, settings.EMAIL_HOST, recipient_list, fail_silently=False)

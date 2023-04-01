@@ -70,3 +70,10 @@ function inInput(){
   document.getElementById('inputText').value = document.getElementById('noteText').innerText;
 }
 
+document.addEventListener('keydown', function(event) {
+  if (event.ctrlKey && event.key === 'z') {
+    event.preventDefault();
+    const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+    document.execCommand('insertText', false, pastedText);
+  }
+});
