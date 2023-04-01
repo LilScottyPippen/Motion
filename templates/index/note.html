@@ -34,6 +34,14 @@
           <button class="page" style="cursor: pointer;"><a href="{% url 'createNote' %}" style="text-decoration: none; color: #8B8B8B">New note</a></button>
       </div>
   </div>
+  {% if request.user == note.user_id %}
+      {% if note.isPublic == False %}
+          <a href="{% url 'noteShare' note.url 1 %}" style="position: absolute; right: 20px; top: 20px; cursor: pointer;"><input type="button" value="Share"></a>
+      {% elif note.isPublic == True %}
+        <a href="{% url 'noteShare' note.url 0 %}" style="position: absolute; right: 20px; top: 20px; cursor: pointer;"><input type="button" value="Don't share"></a>
+      {% endif %}
+  {% endif %}
+  {% if request.user == note.user_id %}
   <div class="content" align="center">
       <form method="post">
           {% csrf_token %}
@@ -44,6 +52,12 @@
           <button type="submit" onclick="inInput()" class="btnSave">Save</button>
       </form>
   </div>
+  {% else %}
+      <div class="content" align="center">
+          <div class="noteTitle" id="noteTitle" align="left" style="pointer-events: none;" data-placeholder="Title">{{ note.title }}</div>
+          <div class="noteText" id="noteText" align="left" style="pointer-events: none;">{{ note.text }}</div>
+      </div>
+  {% endif %}
   <script>
         const targets = document.querySelectorAll('.noteTitle, .noteText');
         targets.forEach((target) => {
