@@ -12,16 +12,19 @@ def indexPage(request):
 
 @login_required(login_url='auth')
 def notePage(request, url):
-    note = Note.objects.get(url=url)
-    if request.user == note.user_id:
-        email = request.user.email
-        username = request.user.username
-        notes = Note.objects.filter(user_id=request.user)
-        if request.method == 'POST':
-            note.title = request.POST.get('title')
-            note.text = request.POST.get('text')
-            note.save()
-    else:
+    try:
+        note = Note.objects.get(url=url)
+        if request.user == note.user_id or note.isPublic == True:
+            email = request.user.email
+            username = request.user.username
+            notes = Note.objects.filter(user_id=request.user)
+            if request.method == 'POST':
+                note.title = request.POST.get('title')
+                note.text = request.POST.get('text')
+                note.save()
+        else:
+            return redirect('note')
+    except:
         return redirect('note')
     context = {
         'email': email,
@@ -56,3 +59,15 @@ def deleteNote(request, url):
     note = Note.objects.get(url=url)
     note.delete()
     return redirect('note')
+
+@login_required(login_url='auth')
+def noteShare(request, url, isPublic):
+    note = Note.objects.get(url=url)
+    print(isPublic)
+    if isPublic == 1:
+        note.isPublic = True
+        note.save()
+    if isPublic == 0:
+        note.isPublic = False
+        note.save()
+    return redirect('notePage', url=url)
